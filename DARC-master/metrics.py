@@ -930,6 +930,8 @@ def main():
     #######################
     ### Utility Metrics ###
     #######################
+    file=open(os.path.expanduser("data/results/submission1_metric.txt"),"w")
+
 
     start = time.process_time()
     m = UtilityMetrics(M, T, AT)
@@ -942,12 +944,19 @@ def main():
     print("E4 score : {}".format(m.e4_metric()))
     print("E5 score : {}".format(m.e5_metric()))
     print("E6 score : {}".format(m.e6_metric()))
+    file.write("E1 score : {}".format(m.e1_metric()))
+    file.write("E2 score : {}".format(m.e2_metric()))
+    file.write("E3 score : {}".format(m.e3_metric()))
+    file.write("E4 score : {}".format(m.e4_metric()))
+    file.write("E5 score : {}".format(m.e5_metric()))
+    file.write("E6 score : {}".format(m.e6_metric()))
 
     print("Temps de calcul : {}".format(time.process_time() - start))
-
+    file.write("Temps de calcul : {}".format(time.process_time() - start))
     #####################
     ### Re-id Metrics ###
     #####################
+
 
     start = time.process_time()
     m = ReidentificationMetrics(M, T, AT)
@@ -960,10 +969,24 @@ def main():
     print("S4 score : {}".format(m.s4_metric()))
     print("S5 score : {}".format(m.s5_metric()))
     print("S6 score : {}".format(m.s6_metric()))
+    file.write("S1 score : {}".format(m.s1_metric()))
+    file.write("S2 score : {}".format(m.s2_metric()))
+    file.write("S3 score : {}".format(m.s3_metric()))
+    file.write("S4 score : {}".format(m.s4_metric()))
+    file.write("S5 score : {}".format(m.s5_metric()))
+    file.write("S6 score : {}".format(m.s6_metric()))
+
+
+
 
     print("Temps de calcul : {}".format(time.process_time() - start))
+    file.write("Temps de calcul : {}".format(time.process_time() - start))
+
 
     print("Temps de calcul TOTAL : {}".format(time.process_time() - total_time))
+    file.write("Temps de calcul TOTAL : {}".format(time.process_time() - total_time))
+
+    file.close()
 
     #  TODO: Thread all execution of e* and s* metrics, BUT DO NOT thread utility and Re-id metrics
     #  together because we tronc the item_id in Re-id metrics, and it appears that it's using the

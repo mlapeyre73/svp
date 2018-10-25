@@ -241,13 +241,14 @@ class DarcEvaluator:
 
             # Save all informations about this attempt and get 3 last scores, it's a **list of dic**
             print("Saving scores and files")
+            """
             self.redis_co.save_first_round_attempt(team_name,\
                                                    submission,\
                                                    s_file,\
                                                    f_file,\
                                                    utility_scores,\
                                                    reid_scores)
-
+            """
             _result_object = {
                 "utility_score" : max(utility_scores),
                 "reidentification_score": max(reid_scores)
@@ -277,8 +278,9 @@ class DarcEvaluator:
             reidentification_score = compute_score_round2(ground_truth, submission)
 
             # Increment by 1 the number of attempts
+            """
             self.redis_co.set_nb_try_reid(nb_atcks+1, team_name, team_attacked, attempt_attacked)
-
+            """
             # Return object
             _result_object = {
                 "reidentification_score": reidentification_score,
@@ -321,8 +323,10 @@ def main():
     # Evaluate
     result = crowdai_evaluator.evaluate(_client_payload, _context)
 
-    file.write(result)
     print(result)
+    file.write(str(result))
+
+    # file.write(result)
 
     print("TESTING : Round 2")
     file.write("TESTING : Round 2")
@@ -338,8 +342,10 @@ def main():
     crowdai_evaluator = DarcEvaluator(answer_file_path, round=2)
     #Evaluate
     result = crowdai_evaluator.evaluate(_client_payload, _context)
-    file.write(result)
     print(result)
+    file.write(str(result))
+
+    # file.write(result)
 
     file.close()
 
