@@ -1,0 +1,21 @@
+#Not all the generated files will be stored
+!data/
+data/*
+
+#csv files needed that will not be recomputed are stored
+#becaue the time to compute them is huge
+!data/uci_dataset_original/
+data/uci_dataset_original/*
+!data/uci_dataset_original/*.csv
+
+!data/tsne_vizualisation/
+data/tsne_vizualisation/*
+!data/tsne_vizualisation/plt/
+
+!data/*.csv
+
+data/testing/*
+
+__pycache__/
+
+source/
