@@ -293,7 +293,7 @@ class DarcEvaluator:
 def main():
     """Main loop
     """
-    file=open(os.path.expanduser("data/results/submission1.txt"),"w")
+    file=open(os.path.expanduser("data/results/submission.txt"),"w")
 
     print("TESTING: Round 1")
     file.write("TESTING: Round 1")

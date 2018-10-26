@@ -923,17 +923,19 @@ def main():
     M = list(M.index)
     M.sort()
     M = pd.DataFrame(M, columns=M_COL.values())
-    AT = pd.read_csv('./data/submission.csv', sep=',', engine='c', na_filter=False, low_memory=False)
+    AT = pd.read_csv('./data/ground_truth_generalized_date_hours_price_qty.csv', sep=',', engine='c', na_filter=False, low_memory=False)
+    # AT = pd.read_csv('./data/submission.csv', sep=',', engine='c', na_filter=False, low_memory=False)
     AT.columns = T_COL.values()
     print("Temps de lecture : {}".format(time.process_time() - start))
 
     #######################
     ### Utility Metrics ###
     #######################
-    file=open(os.path.expanduser("data/results/submission1_metric.txt"),"w")
+    file=open(os.path.expanduser("data/results/ground_truth_generalized_date_hours_price_qty_metric_v1.txt"),"w")
 
 
     start = time.process_time()
+
     m = UtilityMetrics(M, T, AT)
     print("Temps d'initialisation : {}".format(time.process_time() - start))
 
@@ -944,15 +946,15 @@ def main():
     print("E4 score : {}".format(m.e4_metric()))
     print("E5 score : {}".format(m.e5_metric()))
     print("E6 score : {}".format(m.e6_metric()))
-    file.write("E1 score : {}".format(m.e1_metric()))
-    file.write("E2 score : {}".format(m.e2_metric()))
-    file.write("E3 score : {}".format(m.e3_metric()))
-    file.write("E4 score : {}".format(m.e4_metric()))
-    file.write("E5 score : {}".format(m.e5_metric()))
-    file.write("E6 score : {}".format(m.e6_metric()))
+    file.write("E1 score : {}\n".format(m.e1_metric()))
+    file.write("E2 score : {}\n".format(m.e2_metric()))
+    file.write("E3 score : {}\n".format(m.e3_metric()))
+    file.write("E4 score : {}\n".format(m.e4_metric()))
+    file.write("E5 score : {}\n".format(m.e5_metric()))
+    file.write("E6 score : {}\n".format(m.e6_metric()))
 
-    print("Temps de calcul : {}".format(time.process_time() - start))
-    file.write("Temps de calcul : {}".format(time.process_time() - start))
+    print("Temps de calcul : {}\n".format(time.process_time() - start))
+    file.write("Temps de calcul : {}\n".format(time.process_time() - start))
     #####################
     ### Re-id Metrics ###
     #####################
@@ -969,22 +971,22 @@ def main():
     print("S4 score : {}".format(m.s4_metric()))
     print("S5 score : {}".format(m.s5_metric()))
     print("S6 score : {}".format(m.s6_metric()))
-    file.write("S1 score : {}".format(m.s1_metric()))
-    file.write("S2 score : {}".format(m.s2_metric()))
-    file.write("S3 score : {}".format(m.s3_metric()))
-    file.write("S4 score : {}".format(m.s4_metric()))
-    file.write("S5 score : {}".format(m.s5_metric()))
-    file.write("S6 score : {}".format(m.s6_metric()))
+    file.write("S1 score : {}\n".format(m.s1_metric()))
+    file.write("S2 score : {}\n".format(m.s2_metric()))
+    file.write("S3 score : {}\n".format(m.s3_metric()))
+    file.write("S4 score : {}\n".format(m.s4_metric()))
+    file.write("S5 score : {}\n".format(m.s5_metric()))
+    file.write("S6 score : {}\n".format(m.s6_metric()))
 
 
 
 
     print("Temps de calcul : {}".format(time.process_time() - start))
-    file.write("Temps de calcul : {}".format(time.process_time() - start))
+    file.write("Temps de calcul : {}\n".format(time.process_time() - start))
 
 
     print("Temps de calcul TOTAL : {}".format(time.process_time() - total_time))
-    file.write("Temps de calcul TOTAL : {}".format(time.process_time() - total_time))
+    file.write("Temps de calcul TOTAL : {}\n".format(time.process_time() - total_time))
 
     file.close()
 
