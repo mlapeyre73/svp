@@ -64,7 +64,7 @@ if args.inputfilecsv is not "null" :
 		exit(0)
 
 
-records = pickle.load(open("pickle_generalized.p", "r+b"))
+records = pickle.load(open("ground_truth_new_generalized_date_hours_id_item_price_qty.p", "r+b"))
 # records = pickle.load(open("ground_truth.csv", "r+b"))
 # records = csv.reader(os.path.expanduser("ground_truth.csv"))
 
@@ -73,5 +73,5 @@ records = pickle.load(open("pickle_generalized.p", "r+b"))
 # plot_kmap(data=data1, data_label="id_user, date, hours", filename=os.path.expanduser("images/kmap_attrnum=3"), plot_annotation=[[1, 3], [100, 1000]], annotation_params=dict(radius=.1, linestyle=dict(color='r', width=2, style=':')), colormap=plt.cm.viridis)
 
 # Dataset-2: age, sex, native-country, race, relationship, workclass
-data2 = build_fingerprint_dataset(records, attr_ixs=[0, 1, 2, 3, 4, 5])
-plot_kmap(data=data2, data_label="+ id_item, price, qty", filename=os.path.expanduser("images/kmap_generalize_attrnum=6"), plot_annotation=[[1, 3], [100, 1000]], colormap=plt.cm.viridis)
+data2 = build_fingerprint_dataset(records, attr_ixs=[ 1, 2, 3, 4, 5])
+plot_kmap(data=data2, data_label="date, hours, id_item, price, qty", filename=os.path.expanduser("images/ground_truth_new_generalized_date_hours_id_item_price_qty=5"), plot_annotation=[[1, 3], [100, 1000]], colormap=plt.cm.viridis)

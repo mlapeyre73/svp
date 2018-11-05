@@ -1,5 +1,11 @@
 import sys
 import re
+import numpy
+
+const_average_price=3.503359
+const_ecart_type_price=77.519
+const_average_qty=12.021
+const_ecart_type_qty=46.321
 
 """
 continent = {"United-States" : "AM", "Cambodia" : "AS", "England" : "EU", "Puerto-Rico" : "AM", "Canada" : "AM", "Germany" : "EU", "Outlying-US(Guam-USVI-etc)":"AM", "India":"AS", "Japan":"AS", "Greece" : "EU", "South":"AM", "China":"AS", "Cuba":"AM", "Iran":"AS", "Honduras":"AM", "Philippines":"OC", "Italy":"EU", "Poland":"EU", "Jamaica":"AM", "Vietnam":"AS", "Mexico":"AM", "Portugal":"EU", "Ireland":"EU", "France":"EU", "Dominican-Republic":"AM", "Laos":"AS", "Ecuador":"AM", "Taiwan":"AS", "Haiti":"AM", "Columbia":"AM", "Hungary":"EU", "Guatemala":"AM", "Nicaragua":"AM", "Scotland":"EU", "Thailand":"AS", "Yugoslavia":"EU", "El-Salvador":"AM", "Trinadad&Tobago":"AM", "Peru":"AM", "Hong":"AS", "Holand-Netherlands":"EU","?":"?"}
@@ -16,6 +22,10 @@ def generalize_country(c):
 
     return d
 """
+
+
+
+
 def generalize_id_user(a):
     a="".join(["L",a,"D"])
 
@@ -44,37 +54,64 @@ def generalize_hours(a):
     return a
 
 
-def generalize_id_item(a):
+def generalize_id_item(a,list_item):
+    if a in list_item :
+        a=list_item[0]
     return a
 
-# arrondi a 1/10 de l'ecart type   teta=77
-# c'est vraiment pas bien faudra plutot  faire du bruit
+
 def generalize_price(a):
     a = float(a)
-    b = float(7*round(a/7)+1)
+    if a < const_average_price + const_ecart_type_price :
+        b=float(round(a))
+    else :
+        b = float(50*round(a/50))
     b=str(b)
     return b
 
-# generalise a 1/10 de l'ecart type   teta=45
 def generalize_qty(a):
     a = float(a)
-    b = str(4*round(a/4)+1)
+    if a < const_average_qty + const_ecart_type_qty :
+        b=int(3*round(a/3)+1)
+    else :
+        b = int(25*round(a/25))
+    b = str(b)
     return b
 
 
+def differential_privacy_price(a):
+    a = float(a)
+    noise=numpy.random.laplace(0,const_ecart_type_price/4)
+    if a +noise > 0 :
+        a+=noise
+    a= str(a)
+    return a
+
+def differential_privacy_qty(a):
+    a = float(a)
+    noise=numpy.random.laplace(0,const_ecart_type_qty/4)
+    if a +noise > 0 :
+        a+=noise
+    a= str(int(round(a)))
+    return a
+
+
+
+
+
 def generalize(pathfile) :
-    """
-    print(generalize_date("2011/01/31"))
-    print(generalize_date("2011/03/30"))
-    print(generalize_date("2011/02/29"))
-    print(generalize_date("2011/02/28"))
-    print(generalize_date("2011/02/27"))
-    exit(0)
-    """
+    # permet de recuperer item qui ne sont pas bcp vendu
+    # sert pour generalisation_item
+    list_item=[]
+    list_out=open("info_list_id_item.txt","r+")
+    for l in list_out :
+        l=l.split("\n")
+        list_item.append(l[0])
+
 
     infile =  pathfile
     print ("Input file name: %s" % infile)
-    outfile = re.sub("\.","_generalized_date_hours_price_qty.",infile)
+    outfile = re.sub("\.","ground_truth_new_generalized_date_hours_id_item_price_qty_v2.",infile)
     print ("Output file name: %s" % outfile)
 
     out = open(outfile,'w')
@@ -99,11 +136,17 @@ def generalize(pathfile) :
                 elif(ix==2): # hours
                     r[ix] = generalize_hours(a)
                 elif(ix==3): # id_item
-                    r[ix] = generalize_id_item(a)
+                    # r[ix] = generalize_id_item(a,list_item)
+                    r[ix]  =a
+
                 elif(ix==4): # price
                     r[ix] = generalize_price(a)
+                    # r[ix] = differential_privacy_price(a)
+
                 elif(ix==5): # date
+                    # r[ix] = differential_privacy_qty(a)
                     r[ix] = generalize_qty(a)
+                    # r[ix]  =a
                 else:
                     r[ix]  =a
 
