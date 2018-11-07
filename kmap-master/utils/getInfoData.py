@@ -2,6 +2,9 @@ import sys
 import re
 import csv
 from math import sqrt, pow
+import pickle
+import os
+
 
 """
 
@@ -87,6 +90,23 @@ def getInfoData(pathfile) :
     for k,v in dict.items():
         if v>=k_trheshold :
             k_cluster+=1
+
+    """
+    permet de faire le dico de tout les id item
+    """
+    # dico_id_item_troc={}
+    # for k in dict.keys():
+    #     # digits = list(k)
+    #     # first_digit=digits[0:1]
+    #     first_digit=k[0:2]
+    #     first_digit="".join(first_digit)
+    #     if first_digit not in dico_id_item_troc :
+    #         dico_id_item_troc[first_digit]=k
+    #     print(first_digit,dico_id_item_troc[first_digit])
+    # file=open(os.path.expanduser("id_item_two_first_digit.p"),"wb")
+    # pickle.dump(dico_id_item_troc,file)
+
+
 
 
 

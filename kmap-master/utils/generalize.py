@@ -1,6 +1,8 @@
 import sys
 import re
 import numpy
+import pickle
+import os
 
 const_average_price=3.503359
 const_ecart_type_price=77.519
@@ -24,18 +26,16 @@ def generalize_country(c):
 """
 
 
-
-
+"""
+fonction de generalisation
+"""
 def generalize_id_user(a):
     a="".join(["L",a,"D"])
 
     return a
 
-
 # generalise a la semaine
 def generalize_date(a):
-
-
 
     date=a.split("/")
     if(int(date[2])!=28):
@@ -54,9 +54,12 @@ def generalize_hours(a):
     return a
 
 
-def generalize_id_item(a,list_item):
-    if a in list_item :
-        a=list_item[0]
+def generalize_id_item(a,dico_id_item_tronc):
+    letters = list(a)
+    first_digit=letters[0:2]
+    first_digit="".join(first_digit)
+    # try si le dernier char est un int
+    a=dico_id_item_tronc[first_digit]
     return a
 
 
@@ -77,6 +80,11 @@ def generalize_qty(a):
         b = int(25*round(a/25))
     b = str(b)
     return b
+
+"""
+fonction de bruit
+"""
+# probleme de mauvaise valeurs font planter l'algo de metric.py
 
 
 def differential_privacy_price(a):
@@ -111,13 +119,16 @@ def generalize(pathfile) :
 
     infile =  pathfile
     print ("Input file name: %s" % infile)
-    outfile = re.sub("\.","ground_truth_new_generalized_date_hours_id_item_price_qty_v2.",infile)
+    outfile = re.sub("\.","ground_truth_new_generalized_date_hours_id_item_twoFirstDigits_price_qty.",infile)
     print ("Output file name: %s" % outfile)
 
     out = open(outfile,'w')
 
 
     i=0
+
+    file=open(os.path.expanduser("id_item_two_first_digit.p"),"rb")
+    dico_id_item_tronc=pickle.load(file)
 
     for l in open(infile, "r").readlines():
         r_ = l.replace('\r', '').replace('\n', '').replace(', ', ',').split(',')
@@ -136,7 +147,7 @@ def generalize(pathfile) :
                 elif(ix==2): # hours
                     r[ix] = generalize_hours(a)
                 elif(ix==3): # id_item
-                    # r[ix] = generalize_id_item(a,list_item)
+                    r[ix] = generalize_id_item(a,dico_id_item_tronc)
                     r[ix]  =a
 
                 elif(ix==4): # price

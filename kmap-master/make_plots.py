@@ -64,7 +64,7 @@ if args.inputfilecsv is not "null" :
 		exit(0)
 
 
-records = pickle.load(open("ground_truth_new_generalized_date_hours_id_item_price_qty.p", "r+b"))
+records = pickle.load(open("ground_truth_new_generalized_date_hours_id_item_twoFirstDigits_price_qty.p", "r+b"))
 # records = pickle.load(open("ground_truth.csv", "r+b"))
 # records = csv.reader(os.path.expanduser("ground_truth.csv"))
 
