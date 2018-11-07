@@ -2,6 +2,9 @@ import sys
 import re
 import csv
 from math import sqrt, pow
+import pickle
+import os
+
 
 """
 
@@ -16,7 +19,9 @@ ecart_type_qty=46.321
 """
 
 const_average_price=3.503359
+const_ecart_type_price=77.519
 const_average_qty=12.021
+const_ecart_type_qty=46.321
 
 
 
@@ -36,7 +41,7 @@ def getInfoData(pathfile) :
     avg_qty=0.0
     ecart_type_qty=0.0
 
-
+    dict={}
 
     for l in file.readlines():
         r_ = l.replace('\r', '').replace('\n', '').replace(', ', ',').split(',')
@@ -51,10 +56,15 @@ def getInfoData(pathfile) :
             elif(ix==3): # id_item
                 r[ix] = a
             """
-            if i==0 :
+            if i<6 :
                 print("premiere boucle")
             else :
-                if ix==4: # price
+                if ix==3 :
+                    if a not in dict.keys() :
+                        dict[a]=1
+                    else :
+                        dict[a]+=1
+                elif ix==4: # price
                     a=float(a)
                     avg_price+=a
                     ecart_type_price+=pow((a-const_average_price),2)
@@ -75,15 +85,45 @@ def getInfoData(pathfile) :
 
 
             i=i+1
+    k_trheshold=5
+    k_cluster=0
+    for k,v in dict.items():
+        if v>=k_trheshold :
+            k_cluster+=1
+
+    """
+    permet de faire le dico de tout les id item
+    """
+    # dico_id_item_troc={}
+    # for k in dict.keys():
+    #     # digits = list(k)
+    #     # first_digit=digits[0:1]
+    #     first_digit=k[0:2]
+    #     first_digit="".join(first_digit)
+    #     if first_digit not in dico_id_item_troc :
+    #         dico_id_item_troc[first_digit]=k
+    #     print(first_digit,dico_id_item_troc[first_digit])
+    # file=open(os.path.expanduser("id_item_two_first_digit.p"),"wb")
+    # pickle.dump(dico_id_item_troc,file)
 
 
 
 
 
+    out=open("info_ground_truth.txt","w+")
 
-
+    out.write("max_price : "+str(max_price))
+    out.write("min_price : "+str(min_price))
+    out.write("avg_price : "+str(avg_price/i))
+    out.write("ecart_type_price : "+str(sqrt(ecart_type_price/i)) )
+    out.write("max_qty : "+str(max_qty))
+    out.write("min_qty : "+str(min_qty))
+    out.write("avg_qty : "+str(avg_qty/i))
+    out.write("ecart_type_qty : "+str(sqrt(ecart_type_qty/i)))
 
     print("done!")
+    print("k-anonimity : ",k_trheshold," , k_cluster",k_cluster , 'out of ',len(dict.keys()))
+
     print("i",i)
     print("max_price",max_price)
     print("min_price",min_price)
@@ -95,3 +135,9 @@ def getInfoData(pathfile) :
     print("min_qty",min_qty)
     print("avg_qty",avg_qty/i)
     print("ecart_type_qty",sqrt(ecart_type_qty/i))
+
+    dict_out=open("info_list_id_item.txt","w+")
+    for k,v in dict.items():
+        dict_out.write(str(k)+'\n')
+
+    dict_out.close()
