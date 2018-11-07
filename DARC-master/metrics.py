@@ -923,7 +923,7 @@ def main():
     M = list(M.index)
     M.sort()
     M = pd.DataFrame(M, columns=M_COL.values())
-    AT = pd.read_csv('./data/ground_truth_new_generalized_date_hours_id_item_price_qty.csv', sep=',', engine='c', na_filter=False, low_memory=False)
+    AT = pd.read_csv('./data/ground_truth_new_generalized_date_hours_id_item_twoFirstDigits_price_qty.csv', sep=',', engine='c', na_filter=False, low_memory=False)
     # AT = pd.read_csv('./data/submission.csv', sep=',', engine='c', na_filter=False, low_memory=False)
     AT.columns = T_COL.values()
     print("Temps de lecture : {}".format(time.process_time() - start))
@@ -931,7 +931,7 @@ def main():
     #######################
     ### Utility Metrics ###
     #######################
-    file=open(os.path.expanduser("data/results/ground_truth_new_generalized_date_hours_id_item_price_qty.txt"),"w")
+    file=open(os.path.expanduser("data/results/ground_truth_new_generalized_date_hours_id_item_twoFirstDigits_price_qty.txt"),"w")
 
 
     start = time.process_time()

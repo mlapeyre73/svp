@@ -54,12 +54,21 @@ def generalize_hours(a):
     return a
 
 
-def generalize_id_item(a,dico_id_item_tronc):
+def generalize_id_item_first_digit(a,dico_id_item_tronc):
     letters = list(a)
-    first_digit=letters[0:2]
+    first_digit=letters[- len(letters)+2:]
     first_digit="".join(first_digit)
     # try si le dernier char est un int
     a=dico_id_item_tronc[first_digit]
+    return a
+
+def generalize_id_item_two_last_digit(a,dico_id_item_tronc):
+    # print(a)
+    letters = list(a)
+    first_digit=letters[0:len(letters)-2]
+    first_digit="".join(first_digit)
+    a=dico_id_item_tronc[first_digit]
+    # print(a,"\n")
     return a
 
 
@@ -127,8 +136,11 @@ def generalize(pathfile) :
 
     i=0
 
-    file=open(os.path.expanduser("id_item_two_first_digit.p"),"rb")
-    dico_id_item_tronc=pickle.load(file)
+    filefirst=open(os.path.expanduser("id_item_two_first_digit.p"),"rb")
+    dico_id_item_tronc_first=pickle.load(filefirst)
+
+    filelast=open(os.path.expanduser("id_item_two_last_digit.p"),"rb")
+    dico_id_item_tronc_last=pickle.load(filelast)
 
     for l in open(infile, "r").readlines():
         r_ = l.replace('\r', '').replace('\n', '').replace(', ', ',').split(',')
@@ -147,8 +159,9 @@ def generalize(pathfile) :
                 elif(ix==2): # hours
                     r[ix] = generalize_hours(a)
                 elif(ix==3): # id_item
-                    r[ix] = generalize_id_item(a,dico_id_item_tronc)
-                    r[ix]  =a
+                    r[ix] = generalize_id_item_first_digit(a,dico_id_item_tronc_first)
+                    # r[ix] = generalize_id_item_two_last_digit(a,dico_id_item_tronc_last)
+                    # r[ix]  =a
 
                 elif(ix==4): # price
                     r[ix] = generalize_price(a)

@@ -25,6 +25,47 @@ const_ecart_type_qty=46.321
 
 
 
+"""
+permet de faire le dico de tout les id item avec les 2 digit
+"""
+def creat_dico_tronc_two_first_digit(dict):
+    dico_id_item_troc={}
+    for k in dict.keys():
+        # digits = list(k)
+        # first_digit=digits[0:1]
+        first_digit=k[- len(k)+2:]
+        first_digit="".join(first_digit)
+        if first_digit not in dico_id_item_troc :
+            dico_id_item_troc[first_digit]=k
+        print(first_digit,dico_id_item_troc[first_digit])
+    file=open(os.path.expanduser("id_item_two_first_digit.p"),"wb")
+    pickle.dump(dico_id_item_troc,file)
+
+def creat_dico_tronc_two_last_digit(dict):
+    dico_id_item_troc={}
+    for k in dict.keys():
+
+        first_digit=k[0:len(k)-2]
+        first_digit="".join(first_digit)
+        if first_digit not in dico_id_item_troc :
+            dico_id_item_troc[first_digit]=k
+        print(first_digit,dico_id_item_troc[first_digit])
+    file=open(os.path.expanduser("id_item_two_last_digit.p"),"wb")
+    pickle.dump(dico_id_item_troc,file)
+
+def percentile(dict_price):
+    dict_price.sort()
+    i=0
+    percentile=[]
+    for price in dict_price :
+        if i%1000==0:
+            percentile.append(price)
+            print(i," : " ,price)
+        i+=1
+
+    return percentile
+
+
 def getInfoData(pathfile) :
 
 
@@ -41,7 +82,10 @@ def getInfoData(pathfile) :
     avg_qty=0.0
     ecart_type_qty=0.0
 
-    dict={}
+    dict_id_item={}
+    dict_price=[]
+    dict_qty=[]
+
 
     for l in file.readlines():
         r_ = l.replace('\r', '').replace('\n', '').replace(', ', ',').split(',')
@@ -60,12 +104,13 @@ def getInfoData(pathfile) :
                 print("premiere boucle")
             else :
                 if ix==3 :
-                    if a not in dict.keys() :
-                        dict[a]=1
+                    if a not in dict_id_item.keys() :
+                        dict_id_item[a]=1
                     else :
-                        dict[a]+=1
+                        dict_id_item[a]+=1
                 elif ix==4: # price
                     a=float(a)
+                    dict_price.append(a)
                     avg_price+=a
                     ecart_type_price+=pow((a-const_average_price),2)
                     if max_price< a :
@@ -82,30 +127,21 @@ def getInfoData(pathfile) :
                         max_qty=a
                     if min_qty>a :
                         min_qty=a
+                    dict_qty.append(a)
 
 
             i=i+1
     k_trheshold=5
     k_cluster=0
-    for k,v in dict.items():
+    for k,v in dict_id_item.items():
         if v>=k_trheshold :
             k_cluster+=1
 
-    """
-    permet de faire le dico de tout les id item
-    """
-    # dico_id_item_troc={}
-    # for k in dict.keys():
-    #     # digits = list(k)
-    #     # first_digit=digits[0:1]
-    #     first_digit=k[0:2]
-    #     first_digit="".join(first_digit)
-    #     if first_digit not in dico_id_item_troc :
-    #         dico_id_item_troc[first_digit]=k
-    #     print(first_digit,dico_id_item_troc[first_digit])
-    # file=open(os.path.expanduser("id_item_two_first_digit.p"),"wb")
-    # pickle.dump(dico_id_item_troc,file)
 
+    # creat_dico_tronc_two_first_digit(dict_id_item)
+    # creat_dico_tronc_two_last_digit(dict_id_item)
+    percentile(dict_price)
+    percentile(dict_qty)
 
 
 
@@ -122,7 +158,7 @@ def getInfoData(pathfile) :
     out.write("ecart_type_qty : "+str(sqrt(ecart_type_qty/i)))
 
     print("done!")
-    print("k-anonimity : ",k_trheshold," , k_cluster",k_cluster , 'out of ',len(dict.keys()))
+    print("k-anonimity : ",k_trheshold," , k_cluster",k_cluster , 'out of ',len(dict_id_item.keys()))
 
     print("i",i)
     print("max_price",max_price)
@@ -136,8 +172,8 @@ def getInfoData(pathfile) :
     print("avg_qty",avg_qty/i)
     print("ecart_type_qty",sqrt(ecart_type_qty/i))
 
-    dict_out=open("info_list_id_item.txt","w+")
-    for k,v in dict.items():
-        dict_out.write(str(k)+'\n')
+    dict_id_item_out=open("info_list_id_item.txt","w+")
+    for k,v in dict_id_item.items():
+        dict_id_item_out.write(str(k)+'\n')
 
-    dict_out.close()
+    dict_id_item_out.close()
