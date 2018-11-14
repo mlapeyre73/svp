@@ -64,7 +64,7 @@ if args.inputfilecsv is not "null" :
 		exit(0)
 
 
-records = pickle.load(open("ground_truth_new_generalized_date_hours_id_item_twoLastDigits_pricePercentile_qtyPercentile.p", "r+b"))
+records = pickle.load(open("ground_truth_new_generalized_date_hours_id_item_twoLastDigits_pricePercentile_qtyPercentileDifferential.p", "r+b"))
 # records = pickle.load(open("ground_truth.csv", "r+b"))
 # records = csv.reader(os.path.expanduser("ground_truth.csv"))
 
@@ -74,4 +74,4 @@ records = pickle.load(open("ground_truth_new_generalized_date_hours_id_item_twoL
 
 # Dataset-2: age, sex, native-country, race, relationship, workclass
 data2 = build_fingerprint_dataset(records, attr_ixs=[ 1, 2, 3, 4, 5])
-plot_kmap(data=data2, data_label="date, hours, id_item, price, qty", filename=os.path.expanduser("images/ground_truth_new_generalized_date_hours_id_item_twoLastDigits_pricePercentile_qtyPercentile=5"), plot_annotation=[[1, 3], [100, 1000]], colormap=plt.cm.viridis)
+plot_kmap(data=data2, data_label="date, hours, id_item, price, qty", filename=os.path.expanduser("images/ground_truth_new_generalized_date_hours_id_item_twoLastDigits_pricePercentile_qtyPercentileDifferential=5"), plot_annotation=[[1, 3], [100, 1000]], colormap=plt.cm.viridis)
