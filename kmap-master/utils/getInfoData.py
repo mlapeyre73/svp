@@ -53,16 +53,33 @@ def creat_dico_tronc_two_last_digit(dict):
     file=open(os.path.expanduser("id_item_two_last_digit.p"),"wb")
     pickle.dump(dico_id_item_troc,file)
 
-def percentile(dict_price):
+def percentile(dict_price,path):
+    out_percentile=open(path,"w+")
+
     dict_price.sort()
     i=0
     percentile=[]
+    old_price=0
     for price in dict_price :
-        if i%1000==0:
-            percentile.append(price)
-            print(i," : " ,price)
+        if i<300000 :
+            mod=20000
+        elif i<314000 :
+            mod =2000
+        else :
+            mod= 200
+
+        if i%mod==0:
+            if price>0:
+                if old_price!=price :
+                    percentile.append(price)
+                    # print(i," : " ,price)
+                    out_percentile.write(str(i)+" : "+str(price)+"\n")
+                    old_price=price
+
         i+=1
 
+
+    out_percentile.close()
     return percentile
 
 
@@ -109,7 +126,9 @@ def getInfoData(pathfile) :
                     else :
                         dict_id_item[a]+=1
                 elif ix==4: # price
+
                     a=float(a)
+                    # print(a)
                     dict_price.append(a)
                     avg_price+=a
                     ecart_type_price+=pow((a-const_average_price),2)
@@ -136,17 +155,24 @@ def getInfoData(pathfile) :
     for k,v in dict_id_item.items():
         if v>=k_trheshold :
             k_cluster+=1
+    print("done!")
+    print("k-anonimity : ",k_trheshold," , k_cluster",k_cluster , 'out of ',len(dict_id_item.keys()))
 
 
     # creat_dico_tronc_two_first_digit(dict_id_item)
     # creat_dico_tronc_two_last_digit(dict_id_item)
-    percentile(dict_price)
-    percentile(dict_qty)
+    percentile_price=percentile(dict_price,os.path.expanduser("data/info_percentile_price.txt"))
+    file=open(os.path.expanduser("percentile_price.p"),"wb")
+    pickle.dump(percentile_price,file)
+
+    percentile_qty=percentile(dict_qty,os.path.expanduser("data/info_percentile_qty.txt"))
+    file=open(os.path.expanduser("percentile_qty.p"),"wb")
+    pickle.dump(percentile_qty,file)
 
 
 
 
-    out=open("info_ground_truth.txt","w+")
+    out=open(os.path.expanduser("data/info_ground_truth.txt"),"w+")
 
     out.write("max_price : "+str(max_price))
     out.write("min_price : "+str(min_price))
@@ -157,8 +183,7 @@ def getInfoData(pathfile) :
     out.write("avg_qty : "+str(avg_qty/i))
     out.write("ecart_type_qty : "+str(sqrt(ecart_type_qty/i)))
 
-    print("done!")
-    print("k-anonimity : ",k_trheshold," , k_cluster",k_cluster , 'out of ',len(dict_id_item.keys()))
+
 
     print("i",i)
     print("max_price",max_price)
