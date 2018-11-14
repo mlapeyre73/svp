@@ -3,6 +3,7 @@ import re
 import numpy
 import pickle
 import os
+import random
 
 const_average_price=3.503359
 const_ecart_type_price=77.519
@@ -81,6 +82,16 @@ def generalize_price(a):
     b=str(b)
     return b
 
+def generalize_price_percentile(a,percentile_price):
+    a = float(a)
+    i=0
+    while a > percentile_price[i] and i<len(percentile_price)-1:
+        i+=1
+    b=percentile_price[i]
+    # print(a," : ",i," : " ,b)
+    b=str(b)
+    return b
+
 def generalize_qty(a):
     a = float(a)
     if a < const_average_qty + const_ecart_type_qty :
@@ -88,6 +99,16 @@ def generalize_qty(a):
     else :
         b = int(25*round(a/25))
     b = str(b)
+    return b
+
+def generalize_qty_percentile(a,percentile_qty):
+    a = float(a)
+    i=0
+    while a > percentile_qty[i] and i<len(percentile_qty)-1:
+        i+=1
+    b=percentile_qty[i]
+    # print(a," : ",i," : " ,b)
+    b=str(b)
     return b
 
 """
@@ -112,6 +133,20 @@ def differential_privacy_qty(a):
     a= str(int(round(a)))
     return a
 
+# l'idee de cette fonction est que pour les petites valeurs [0-10] on les tire aleatoirement
+def differential_qty_percentile(a,percentile_qty):
+    a = float(a)
+    if a<10 :
+        b = random.randint(1,9)
+    else :
+        i=0
+        while a > percentile_qty[i] and i<len(percentile_qty)-1:
+            i+=1
+        b=percentile_qty[i]
+        # print(a," : ",i," : " ,b)
+    b=str(b)
+    return b
+
 
 
 
@@ -120,7 +155,7 @@ def generalize(pathfile) :
     # permet de recuperer item qui ne sont pas bcp vendu
     # sert pour generalisation_item
     list_item=[]
-    list_out=open("info_list_id_item.txt","r+")
+    list_out=open("data/info_list_id_item.txt","r+")
     for l in list_out :
         l=l.split("\n")
         list_item.append(l[0])
@@ -128,7 +163,7 @@ def generalize(pathfile) :
 
     infile =  pathfile
     print ("Input file name: %s" % infile)
-    outfile = re.sub("\.","ground_truth_new_generalized_date_hours_id_item_twoFirstDigits_price_qty.",infile)
+    outfile = re.sub("\.","ground_truth_new_generalized_date_hours_id_item_twoLastDigits_pricePercentile_qtyPercentile.",infile)
     print ("Output file name: %s" % outfile)
 
     out = open(outfile,'w')
@@ -141,6 +176,12 @@ def generalize(pathfile) :
 
     filelast=open(os.path.expanduser("id_item_two_last_digit.p"),"rb")
     dico_id_item_tronc_last=pickle.load(filelast)
+
+    filepercentileqty=open(os.path.expanduser("percentile_qty.p"),"rb")
+    percentile_qty=pickle.load(filepercentileqty)
+
+    filepercentileprice=open(os.path.expanduser("percentile_price.p"),"rb")
+    percentile_price=pickle.load(filepercentileprice)
 
     for l in open(infile, "r").readlines():
         r_ = l.replace('\r', '').replace('\n', '').replace(', ', ',').split(',')
@@ -159,17 +200,21 @@ def generalize(pathfile) :
                 elif(ix==2): # hours
                     r[ix] = generalize_hours(a)
                 elif(ix==3): # id_item
-                    r[ix] = generalize_id_item_first_digit(a,dico_id_item_tronc_first)
-                    # r[ix] = generalize_id_item_two_last_digit(a,dico_id_item_tronc_last)
+                    # r[ix] = generalize_id_item_first_digit(a,dico_id_item_tronc_first)
+                    r[ix] = generalize_id_item_two_last_digit(a,dico_id_item_tronc_last)
                     # r[ix]  =a
 
                 elif(ix==4): # price
-                    r[ix] = generalize_price(a)
+                    r[ix] =generalize_price_percentile(a,percentile_price)
+                    # r[ix] = generalize_price(a)
                     # r[ix] = differential_privacy_price(a)
 
                 elif(ix==5): # date
+
+                    # r[ix] =differential_qty_percentile(a,percentile_qty)
+                    r[ix] =generalize_qty_percentile(a,percentile_qty)
                     # r[ix] = differential_privacy_qty(a)
-                    r[ix] = generalize_qty(a)
+                    # r[ix] = generalize_qty(a)
                     # r[ix]  =a
                 else:
                     r[ix]  =a
