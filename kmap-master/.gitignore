@@ -1,6 +1,11 @@
-/.idea/
-*.p
-*.pdf
-/_tmp/
-*.data
-*.pyc
+#csv files needed that will not be recomputed are stored
+#becaue the time to compute them is huge
+!data/uci_dataset_original/
+data/uci_dataset_original/*
+!data/uci_dataset_original/*.csv
+
+!data/tsne_vizualisation/
+data/tsne_vizualisation/*
+!data/tsne_vizualisation/plt/
+
+!data/*.csv
