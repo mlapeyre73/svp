@@ -4,6 +4,7 @@ import numpy
 import pickle
 import os
 import random
+import hashlib
 
 const_average_price=3.503359
 const_ecart_type_price=77.519
@@ -31,9 +32,31 @@ def generalize_country(c):
 fonction de generalisation
 """
 def generalize_id_user(a):
-    a="".join(["L",a,"D"])
+    b="".join(["L",a,"D"])
+    return b
+def hash_id_user(a):
+    b=hashlib.md5(a.encode()).hexdigest()
+    b="".join(["L",b,"D"])
+    return b
 
-    return a
+def hash_salt_id_user(a):
+    salt=str(random.randint(1,3500000000))
+    s=a+salt
+    b=hashlib.md5(s.encode()).hexdigest()
+    b="".join(["L",b,"D"])
+    return b
+
+def random_hash_salt_id_user(a):
+    rand=random.randint(1,20)
+    b=a
+    if rand == 20 :
+        salt=str(random.randint(1,3500000000))
+        s=a+salt
+        b=hashlib.md5(s.encode()).hexdigest()
+        b="".join(["L",b,"D"])
+    return b
+
+
 
 # generalise a la semaine
 def generalize_date(a):
@@ -51,7 +74,8 @@ def generalize_date(a):
 # generalise a l'heure
 def generalize_hours(a):
     hours=a.split(":")
-    a=":".join([hours[0],"00"])
+    # a=":".join([hours[0],"00"]"
+    a="12:12"
     return a
 
 
@@ -100,6 +124,10 @@ def generalize_qty(a):
         b = int(25*round(a/25))
     b = str(b)
     return b
+def generalize_qty_price_to_2(a):
+
+    b = str(2)
+    return b
 
 def generalize_qty_percentile(a,percentile_qty):
     a = float(a)
@@ -116,6 +144,15 @@ fonction de bruit
 """
 # probleme de mauvaise valeurs font planter l'algo de metric.py
 
+def differential_id_item(a,list_id_item):
+    rand=random.randint(1,20)
+    b=a
+    if rand==1 :
+
+        r=random.randint(1,len(list_id_item))
+        b=list_id_item[r-1]
+
+    return b
 
 def differential_privacy_price(a):
     a = float(a)
@@ -163,7 +200,7 @@ def generalize(pathfile) :
 
     infile =  pathfile
     print ("Input file name: %s" % infile)
-    outfile = re.sub("\.","ground_truth_new_generalized_date_hours_id_item_twoLastDigits_pricePercentile_qtyPercentile.",infile)
+    outfile = re.sub("\.","ground_truth_id_user_hashsalte1sur20_date_hours_uniq_id_item_Delete5_price_percent20000_qty_percent20000.",infile)
     print ("Output file name: %s" % outfile)
 
     out = open(outfile,'w')
@@ -183,10 +220,20 @@ def generalize(pathfile) :
     filepercentileprice=open(os.path.expanduser("percentile_price.p"),"rb")
     percentile_price=pickle.load(filepercentileprice)
 
+    fileidItem=open(os.path.expanduser("list_id_item.p"),"rb")
+    list_id_item=pickle.load(fileidItem)
+
+    filedict_id_item_sell=open(os.path.expanduser("dict_id_item_sell.p"),"rb")
+    dict_id_item_sell=pickle.load(filedict_id_item_sell)
+
+    filedict_id_users_buy=open(os.path.expanduser("dict_id_users_buy.p"),"rb")
+    dict_id_users_buy=pickle.load(filedict_id_users_buy)
+
     for l in open(infile, "r").readlines():
         r_ = l.replace('\r', '').replace('\n', '').replace(', ', ',').split(',')
 
         r = [""] *  len(r_)
+        boolean_break=False
         for ix, a in enumerate(r_):
             if i<6 :
                 r[ix] = a
@@ -194,42 +241,55 @@ def generalize(pathfile) :
                 i=i+1
             else :
                 if(ix==0): #id_user
-                    r[ix] = generalize_id_user(a)
+                    # r[ix] = hash_salt_id_user(a)
+                    r[ix] = random_hash_salt_id_user(a)
+                    # r[ix] = generalize_id_user(a)
+
+
                 elif(ix==1): # date
                     r[ix] = generalize_date(a)
+                    # r[ix]  =a
                 elif(ix==2): # hours
                     r[ix] = generalize_hours(a)
+                    # r[ix]  =a
                 elif(ix==3): # id_item
                     # r[ix] = generalize_id_item_first_digit(a,dico_id_item_tronc_first)
-                    r[ix] = generalize_id_item_two_last_digit(a,dico_id_item_tronc_last)
-                    # r[ix]  =a
+                    # r[ix] = generalize_id_item_two_last_digit(a,dico_id_item_tronc_last)
+                    if dict_id_item_sell[a] <=5 :
+                        print(a)
+                        boolean_break=True
+
+                    # r[ix]=differential_id_item(a,list_id_item)
+                    r[ix]  =a
+
 
                 elif(ix==4): # price
                     r[ix] =generalize_price_percentile(a,percentile_price)
                     # r[ix] = generalize_price(a)
                     # r[ix] = differential_privacy_price(a)
+                    # r[ix]  =generalize_qty_price_to_2(a)
+                    # r[ix]  =a
 
-                elif(ix==5): # date
+                elif(ix==5): # qty
 
                     # r[ix] =differential_qty_percentile(a,percentile_qty)
                     r[ix] =generalize_qty_percentile(a,percentile_qty)
                     # r[ix] = differential_privacy_qty(a)
                     # r[ix] = generalize_qty(a)
+                    # r[ix]  =generalize_qty_price_to_2(a)
                     # r[ix]  =a
                 else:
                     r[ix]  =a
 
-
-
-
-
-
-
-
-
-
+        # out.write(",".join(r))
+        # out.write("\n")
         #out.write(["%s," % item  for item in r])
-        out.write(",".join(r))
-        out.write("\n")
+        # print("boolean_break",boolean_break)
+        if boolean_break==False :
+            # print("jecris")
+            out.write(",".join(r))
+            out.write("\n")
+        # else :
+        #     input("pause")
     out.close()
     print("done!")

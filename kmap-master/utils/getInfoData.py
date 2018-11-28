@@ -53,6 +53,9 @@ def creat_dico_tronc_two_last_digit(dict):
     file=open(os.path.expanduser("id_item_two_last_digit.p"),"wb")
     pickle.dump(dico_id_item_troc,file)
 
+
+
+
 def percentile(dict_price,path):
     out_percentile=open(path,"w+")
 
@@ -61,6 +64,7 @@ def percentile(dict_price,path):
     percentile=[]
     old_price=0
     for price in dict_price :
+        mod=50000
         if i<300000 :
             mod=20000
         elif i<314000 :
@@ -72,7 +76,7 @@ def percentile(dict_price,path):
             if price>0:
                 if old_price!=price :
                     percentile.append(price)
-                    # print(i," : " ,price)
+                    print(i," : "   ,price)
                     out_percentile.write(str(i)+" : "+str(price)+"\n")
                     old_price=price
 
@@ -100,6 +104,10 @@ def getInfoData(pathfile) :
     ecart_type_qty=0.0
 
     dict_id_item={}
+    dict_id_users={}
+
+    list_id_item=[]
+
     dict_price=[]
     dict_qty=[]
 
@@ -120,11 +128,22 @@ def getInfoData(pathfile) :
             if i<6 :
                 print("premiere boucle")
             else :
-                if ix==3 :
+                if ix==0:
+                    dict_id_users
+                    if a not in dict_id_users.keys() :
+                        dict_id_users[a]=1
+                    else :
+                        dict_id_users[a]+=1
+
+                elif ix==3 :
                     if a not in dict_id_item.keys() :
                         dict_id_item[a]=1
                     else :
                         dict_id_item[a]+=1
+
+                    if a not in list_id_item:
+                        list_id_item.append(a)
+
                 elif ix==4: # price
 
                     a=float(a)
@@ -170,6 +189,18 @@ def getInfoData(pathfile) :
     pickle.dump(percentile_qty,file)
 
 
+    file=open(os.path.expanduser("list_id_item.p"),"wb")
+    pickle.dump(list_id_item,file)
+
+    file_dict_id_item=open(os.path.expanduser("dict_id_item_sell.p"),"wb")
+    pickle.dump(dict_id_item,file_dict_id_item)
+
+    file_dict_id_users=open(os.path.expanduser("dict_id_users_buy.p"),"wb")
+    pickle.dump(dict_id_users,file_dict_id_users)
+
+
+
+
 
 
     out=open(os.path.expanduser("data/info_ground_truth.txt"),"w+")
@@ -197,8 +228,15 @@ def getInfoData(pathfile) :
     print("avg_qty",avg_qty/i)
     print("ecart_type_qty",sqrt(ecart_type_qty/i))
 
-    dict_id_item_out=open("info_list_id_item.txt","w+")
-    for k,v in dict_id_item.items():
-        dict_id_item_out.write(str(k)+'\n')
+    dict_id_item_out=open("info_dic_id_item.txt","w+")
+    out.write("\n\ndico_it_item\n\n : ")
+    sorted_by_value =  sorted(dict_id_item, key=dict_id_item.get, reverse=True) #sorted(dict_id_item.items(), key=lambda kv: kv[1], reverse=True)
+    for k in sorted_by_value:
+        dict_id_item_out.write(str(k)+" : "+str(dict_id_item[k])+'\n')
+
+    out.write("\n\ndico_it_user\n\n : ")
+    sorted_by_value = sorted(dict_id_users, key=dict_id_users.get, reverse=True) #sorted(dict_id_users.items(), key=lambda kv: kv[1], reverse=True)
+    for k  in sorted_by_value:
+        dict_id_item_out.write(str(k)+" : "+str(dict_id_users[k])+'\n')
 
     dict_id_item_out.close()

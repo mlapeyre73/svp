@@ -1,1 +1,9 @@
 max_price : 38970.0min_price : 0.001avg_price : 0.5838931979709674ecart_type_price : 31.64704774231004max_qty : 4800.0min_qty : -9360.0avg_qty : 2.003500201557295ecart_type_qty : 18.91056694279539
+
+dico_it_item
+
+ : 
+
+dico_it_user
+
+ : 
