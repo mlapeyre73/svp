@@ -135,21 +135,6 @@ def differential_privacy_qty(a):
     a= str(int(round(a)))
     return a
 
-def differential_privacy_date(a):
-    date=a.split("/")
-    # print(date)
-    if(int(date[2])!=28):
-        noise=random.randint(-2,2)
-        date[2]=int(date[2])+noise
-        if(date[2] < 1):
-            date[2] = 1
-        if(date[2] > 28):
-            date[2] = 28
-        date[2]='{0:02}'.format(date[2])
-        date[2]=str(date[2])
-    a="/".join(date)
-    return a
-
 def differential_privacy_date(a, noise_range):
     date=a.split("/")
     date_formated=datetime(int(date[0]), int(date[1]), int(date[2]))
