@@ -159,8 +159,8 @@ def getInfoData(pathfile) :
     print("k-anonimity : ",k_trheshold," , k_cluster",k_cluster , 'out of ',len(dict_id_item.keys()))
 
 
-    # creat_dico_tronc_two_first_digit(dict_id_item)
-    # creat_dico_tronc_two_last_digit(dict_id_item)
+    creat_dico_tronc_two_first_digit(dict_id_item)
+    creat_dico_tronc_two_last_digit(dict_id_item)
     percentile_price=percentile(dict_price,os.path.expanduser("data/info_percentile_price.txt"))
     file=open(os.path.expanduser("percentile_price.p"),"wb")
     pickle.dump(percentile_price,file)

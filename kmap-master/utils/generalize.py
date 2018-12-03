@@ -4,6 +4,8 @@ import numpy
 import pickle
 import os
 import random
+import time
+from datetime import datetime, timedelta
 
 const_average_price=3.503359
 const_ecart_type_price=77.519
@@ -133,6 +135,32 @@ def differential_privacy_qty(a):
     a= str(int(round(a)))
     return a
 
+def differential_privacy_date(a):
+    date=a.split("/")
+    # print(date)
+    if(int(date[2])!=28):
+        noise=random.randint(-2,2)
+        date[2]=int(date[2])+noise
+        if(date[2] < 1):
+            date[2] = 1
+        if(date[2] > 28):
+            date[2] = 28
+        date[2]='{0:02}'.format(date[2])
+        date[2]=str(date[2])
+    a="/".join(date)
+    return a
+
+def differential_privacy_date(a, noise_range):
+    date=a.split("/")
+    date_formated=datetime(int(date[0]), int(date[1]), int(date[2]))
+    print(date_formated)
+    noise=random.randint(-noise_range,noise_range)
+    new_date_formated = date_formated + timedelta(days=noise)  
+    print(new_date_formated)
+    a=str(new_date_formated.year)+'/'+str(new_date_formated.month)+'/'+str(new_date_formated.day)
+    print(a+'\n')
+    return a 
+
 # l'idee de cette fonction est que pour les petites valeurs [0-10] on les tire aleatoirement
 def differential_qty_percentile(a,percentile_qty):
     a = float(a)
@@ -163,7 +191,7 @@ def generalize(pathfile) :
 
     infile =  pathfile
     print ("Input file name: %s" % infile)
-    outfile = re.sub("\.","ground_truth_new_generalized_date_hours_id_item_twoLastDigits_pricePercentile_qtyPercentile.",infile)
+    outfile = re.sub("\.","ground_truth_new_generalized_diffPrivacyDate7days_hours_pricePercentile_qtyPercentile.",infile)
     print ("Output file name: %s" % outfile)
 
     out = open(outfile,'w')
@@ -196,26 +224,26 @@ def generalize(pathfile) :
                 if(ix==0): #id_user
                     r[ix] = generalize_id_user(a)
                 elif(ix==1): # date
-                    r[ix] = generalize_date(a)
+                    r[ix] = differential_privacy_date(a, 7)
+                    # r[ix] = generalize_date(a)
                 elif(ix==2): # hours
                     r[ix] = generalize_hours(a)
                 elif(ix==3): # id_item
                     # r[ix] = generalize_id_item_first_digit(a,dico_id_item_tronc_first)
-                    r[ix] = generalize_id_item_two_last_digit(a,dico_id_item_tronc_last)
-                    # r[ix]  =a
+                    # r[ix] = generalize_id_item_two_last_digit(a,dico_id_item_tronc_last)
+                    r[ix]  =a
 
                 elif(ix==4): # price
                     r[ix] =generalize_price_percentile(a,percentile_price)
                     # r[ix] = generalize_price(a)
                     # r[ix] = differential_privacy_price(a)
 
-                elif(ix==5): # date
+                elif(ix==5): # quantity
 
                     # r[ix] =differential_qty_percentile(a,percentile_qty)
                     r[ix] =generalize_qty_percentile(a,percentile_qty)
-                    # r[ix] = differential_privacy_qty(a)
                     # r[ix] = generalize_qty(a)
-                    # r[ix]  =a
+                    r[ix]  =a
                 else:
                     r[ix]  =a
 
