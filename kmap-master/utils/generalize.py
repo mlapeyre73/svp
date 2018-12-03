@@ -5,6 +5,8 @@ import pickle
 import os
 import random
 import hashlib
+import time
+from datetime import datetime, timedelta
 
 const_average_price=3.503359
 const_ecart_type_price=77.519
@@ -154,6 +156,17 @@ def differential_id_item(a,list_id_item):
 
     return b
 
+def differential_privacy_date(a, noise_range):
+    date=a.split("/")
+    date_formated=datetime(int(date[0]), int(date[1]), int(date[2]))
+    print(date_formated)
+    noise=random.randint(-noise_range,noise_range)
+    new_date_formated = date_formated + timedelta(days=noise)  
+    print(new_date_formated)
+    a=str(new_date_formated.year)+'/'+str(new_date_formated.month)+'/'+str(new_date_formated.day)
+    print(a+'\n')
+    return a 
+
 def differential_privacy_price(a):
     a = float(a)
     noise=numpy.random.laplace(0,const_ecart_type_price/4)
@@ -200,7 +213,7 @@ def generalize(pathfile) :
 
     infile =  pathfile
     print ("Input file name: %s" % infile)
-    outfile = re.sub("\.","ground_truth_id_user_hashsalte1sur20_date_hours_uniq_id_item_Delete5_price_percent20000_qty_percent20000.",infile)
+    outfile = re.sub("\.","ground_truth_id_user_hashsalte1sur20_diffPrivacyDate7days_hours_uniq_id_item_Delete5_price_percent20000_qty_percent20000.",infile)
     print ("Output file name: %s" % outfile)
 
     out = open(outfile,'w')
@@ -247,7 +260,8 @@ def generalize(pathfile) :
 
 
                 elif(ix==1): # date
-                    r[ix] = generalize_date(a)
+                    # r[ix] = generalize_date(a)
+                    r[ix] = differential_privacy_date(a, 7)
                     # r[ix]  =a
                 elif(ix==2): # hours
                     r[ix] = generalize_hours(a)
@@ -255,12 +269,12 @@ def generalize(pathfile) :
                 elif(ix==3): # id_item
                     # r[ix] = generalize_id_item_first_digit(a,dico_id_item_tronc_first)
                     # r[ix] = generalize_id_item_two_last_digit(a,dico_id_item_tronc_last)
-                    if dict_id_item_sell[a] <=5 :
-                        print(a)
-                        boolean_break=True
+                    # if dict_id_item_sell[a] <=5 :
+                    #     print(a)
+                    #     boolean_break=True
 
-                    # r[ix]=differential_id_item(a,list_id_item)
-                    r[ix]  =a
+                    r[ix]=differential_id_item(a,list_id_item)
+                    # r[ix]  =a
 
 
                 elif(ix==4): # price
