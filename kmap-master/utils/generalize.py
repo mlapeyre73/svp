@@ -163,7 +163,7 @@ def differential_privacy_date(a, noise_range):
     noise=random.randint(-noise_range,noise_range)
     new_date_formated = date_formated + timedelta(days=noise)  
     print(new_date_formated)
-    a=str(new_date_formated.year)+'/'+str(new_date_formated.month)+'/'+str(new_date_formated.day)
+    a=str(new_date_formated.year)+'/'+str('{0:02}'.format(new_date_formated.month))+'/'+str('{0:02}'.format(new_date_formated.day))
     print(a+'\n')
     return a 
 
